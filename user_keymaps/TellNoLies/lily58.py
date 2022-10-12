@@ -1,11 +1,18 @@
-from kb import KMKKeyboard, data_pin
+from kb import KMKKeyboard
 
-from kmk.extensions.ble_split import BLE_Split
 from kmk.extensions.layers import Layers
 from kmk.keys import KC
-from kmk.modules.split import Split, SplitSide, SplitType
+from kmk.modules.modtap import ModTap
+from kmk.modules.split import Split, SplitType
+from kmk.modules.media_keys import MediaKeys
 
 keyboard = KMKKeyboard()
+media_keys = MediaKeys()
+layers = Layers()
+modtap = ModTap()
+split = Split(Split_type=SplitType.UART)
+
+keyboard.modules = [modtap, layers, media_keys, split]
 
 # Cleaner key names
 _______ = KC.TRNS
@@ -14,55 +21,71 @@ XXXXXXX = KC.NO
 LOWER = KC.MO(1)
 RAISE = KC.MO(2)
 ADJUST = KC.LT(3, KC.SPC)
-BRWSFW = KC.LALT(KC.RIGHT)
-BRWSBW = KC.LALT(KC.LEFT)
+GAMEA = KC.LT(4)
+GAMEB = KC.MO(5)
 UNDO = KC.LCTL(KC.Z)
 CUT = KC.LCTL(KC.X)
 COPY = KC.LCTL(KC.C)
 PASTE = KC.LCTL(KC.V)
-DEL = KC.LSFT(KC.DEL)
+SAVE = KC.LCTL(KC.S)
+WB = KC.LALT(KC.LEFT)
+WF = KC.LALT(KC.RGHT)
+REF = KC.F5
+
+
+# Adding extensions
 
 # TODO Comment one of these on each side
 # Left is 0, Right is 1
 split_side = 0
 split_side = 1
-# split = BLE_Split(split_side=split_side)
-# No trrs connceting the two halves
-split = Split(split_type=Split.BLE, split_side=SplitSide.LEFT)
-keyboard.modules.append(split)
 
 layers_ext = Layers()
 
 extensions = [layers_ext, split]
 
 keyboard.keymap = [
-    [  #COLMAK_DH
-        KC.ESC,   KC.N1,  KC.N2,   KC.N3,   KC.N4,   KC.N5,                        KC.N6,   KC.N7,   KC.N8,   KC.N9,  KC.N0,   KC.TILD,\
-        KC.TAB,    KC.Q,  KC.W,    KC.F,    KC.P,    KC.B,                         KC.J,    KC.L,    KC.U,    KC.Y,   KC.SCLN, KC.TILD,\
-        KC.BSPC,   KC.A,  KC.R,    KC.S,    KC.T,    KC.G,                         KC.M,    KC.N,    KC.E,    KC.I,   KC.O,    KC.QUOT,\
-        KC.LCTRL,  KC.Z,  KC.X,    KC.C,    KC.D,    KC.V,  KC.PSCR,      KC.CAPS, KC.K,    KC.H,   KC.COMM,  KC.DOT, KC.SLSH, KC.ENT,\
-                                   KC.LALT, KC.LGUI, LOWER, ADJUST,       ADJUST,  RAISE,  KC.VOLD, KC.VOLU,
+    [  #COLEMAK
+        KC.TAB,    KC.Q,    KC.W,    KC.F,    KC.P,    KC.G,                         KC.J,  KC.L,    KC.U,    KC.Y,    KC.SCLN, KC.BSLS,\
+        KC.BSPC,   KC.A,    KC.R,    KC.S,    KC.T,    KC.D,                         KC.H,  KC.N,    KC.E,    KC.I,    KC.O,    KC.QUOT,\
+        KC.LSFT,   KC.Z,    KC.X,    KC.C,    KC.V,    KC.B,                         KC.N,  KC.M,    KC.COMM, KC.DOT,  KC.SLSH, KC.ENT,\
+        KC.LCTL,   KC.LALT, KC.LGUI, KC.C,    KC.V,    KC.B, KC.ESC,       KC.MPLY,  KC.MPRV, KC.MNXT, KC.VOLD, KC.MUTE, KC.VOLU, KC.RGUI,\
+                            KC.MEH, ADJUST,   LOWER,  KC.SPC,         KC.SPC, RAISE, KC.LT(4), ADJUST,
     ],
     [  #LOWER
-        KC.GESC, KC.N1,   KC.N2,   KC.N3,   KC.N4,   KC.N5,                       KC.N6,   KC.N7,   KC.N8,  KC.N9,   KC.N0, KC.BSPC,\
-        KC.TAB,  KC.PGUP, KC.END,  KC.UP,   KC.HOME, KC.INS,                      KC.PSLS, KC.P7,   KC.P8,  KC.P9, KC.PMNS, KC.PEQL,\
-        KC.DEL,  KC.PGDN, KC.LEFT, KC.DOWN, KC.RGHT, KC.BRK,                      KC.PAST, KC.P4,   KC.P5,  KC.P6, KC.PPLS, KC.PENT,\
-        KC.LSFT, KC.VOLD, KC.MUTE, KC.VOLU, BRWSBW, BRWSFW,  KC.F5,      KC.NLCK, KC.P0,   KC.P1,   KC.P2,  KC.P3, KC.PCMM, KC.PDOT,\
-                                   KC.LALT, KC.LGUI, LOWER,  KC.MEH,     KC.LCTL,  KC.MPRV,  KC.MPLY, KC.MNXT,
+        XXXXXXX, KC.PGUP, KC.HOME, KC.UP,   KC.END,  KC.INS,                      KC.LNUM, KC.KP_7, KC.KP_8, KC.KP_9, KC.PSLS, KC.PAST,\
+        KC.DEL,  KC.PGDN, KC.LEFT, KC.DOWN, KC.RGHT, KC.MPRV,                     KC.MNXT, KC.KP_4, KC.KP_5, KC.KP_6, KC.PMNS, KC.PPLS,\
+        KC.LSFT, UNDO,    CUT,     COPY,    PASTE,   KC.REF,                      KC.KP_0, KC.KP_1, KC.KP_2, KC.KP_3, KC.PEQL, KC.PENT,\
+        KC.LCTL, XXXXXXX, XXXXXXX, SAVE,    KC.WB,   KC.WF,  KC.PSCR,    KC.LCAP, KC.RBRC,  KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS, KC.TRNS,\
+                            KC.TRNS,    KC.LGUI, LOWER,  ADJUST,    KC.SPC,   RAISE,  KC.RALT, KC.TRNS,
     ],
     [  #RAISE
-        KC.DEL,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                       KC.LEFT, KC.DOWN, KC.UP,   KC.RIGHT, XXXXXXX, XXXXXXX,\
-        KC.ESC,  KC.EXLM, KC.AT, KC.HASH, KC.DLR,  KC.PERC,                         KC.CIRC, KC.AMPR, KC.ASTR, KC.LPRN, KC.RPRN, KC.BSPC,\
-        KC.LCTL, KC.DQT,  KC.LT,  KC.GT,  KC.ASTR, KC.LPRN,                         KC.RPRN, KC.UNDS, KC.MINS, KC.PLUS, KC.EQL,  KC.GRV,\
-        KC.LSFT, XXXXXXX, XXXXXXX, XXXXXXX, KC.RCBR, KC.LBRC, KC.PSCR,     KC.NLCK, KC.RBRC, KC.RCBR, KC.LBRC, _______, KC.BSLS, KC.TILD,\
-                                   KC.LALT, KC.LGUI, LOWER,   ADJUST,      ADJUST,  RAISE,  KC.VOLD, KC.VOLU,
+        KC.TILD,  KC.EXLM, KC.AT, KC.HASH,  KC.DLR,   KC.PERC,                        KC.CIRC, KC.AMPR, KC.ASTR, KC.LPRN, KC.RPRN, KC.PIPE,\
+        KC.GRAVE, KC.NO,   KC.NO, KC.QUES,  KC.COLN,  KC.LPRN,                        KC.RPRN, KC.UNDS, KC.MINS, KC.PLUS, KC.EQL,  KC.QUOT,\
+        KC.LCTL,  KC.NO,   KC.NO, KC.LT,    KC.GT,    KC.RCBR,                        KC.LCBR,  KC.EQL, KC.LCBR, KC.RCBR, KC.PIPE, KC.GRV,\
+        UNDO,     CUT,     COPY,  PASTE,    SAVE,     KC.LBRC, KC.LPRN,     KC.RPRN,  KC.RBRC, KC.PLUS, KC.LBRC, KC.RBRC, KC.BSLS, KC.TILD,\
+                            KC.TRNS,    KC.LGUI,  LOWER,  ADJUST,       KC.ENT, RAISE,  KC.RALT, KC.TRNS,
+    ],
+        [  #GAMEA
+        KC.TAB,   KC.N1,   KC.N2,   KC.N3,   KC.N4,   KC.N5,                      KC.N6,   KC.N7,   KC.N8,   KC.N9,   KC.N0,   XXXXXXX,\
+        KC.BSPC,  KC.Q,    KC.W,    KC.F,    KC.P,    KC.G,                       KC.CIRC, KC.AMPR, KC.ASTR, KC.LPRN, KC.RPRN, KC.BSPC,\
+        KC.LCTL,  KC.A,    KC.R,    KC.S,    KC.T,    KC.D,                       KC.MINS, KC.EQL,  KC.LCBR, KC.RCBR, KC.PIPE, KC.GRV,\
+        KC.LSFT,  KC.Z,    KC.X,    KC.C,    KC.V,    KC.B, KC.ESC,    XXXXXXX,   KC.UNDS, KC.PLUS, KC.LBRC, KC.RBRC, KC.BSLS, KC.TILD,\
+                            KC.TRNS,     LOWER,   KC.MO(4), KC.SPC,    KC.SPC, RAISE,  KC.RALT, XXXXXXX,
+    ],
+        [  #GAMEB
+        KC.ESC,  KC.N6,   KC.N7,  KC.N8,    KC.N9,   KC.N0,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+        KC.BSPC, KC.J,    KC.L,   KC.U,     KC.Y,    KC.SCLN,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+        KC.LSFT, KC.H,    KC.N,   KC.E,     KC.I,    KC.O,                         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+        KC.LCTL, KC.N,    KC.M,   KC.COMM,  KC.DOT,  KC.SLSH, XXXXXXX,    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+                                KC.TRNS, KC.LGUI,   KC.TRNS,  LOWER,     KC.ENT,   RAISE,  KC.RALT, XXXXXXX,
     ],
     [  #ADJUST
-        KC.F13,  KC.F14, KC.F15, KC.F16, KC.F17, KC.F18,                        KC.LEFT, KC.DOWN, KC.UP,   KC.RIGHT, XXXXXXX, XXXXXXX,\
-        KC.F1,   KC.F2,  KC.F3,  KC.F4,  KC.F5,  KC.F6,                       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-        KC.F7,   KC.F8,  KC.F9,  KC.F10, KC.F11, KC.F12,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-        KC.LSFT, UNDO,  CUT,     COPY,   PASTE,  DEL,     KC.SLSH,      KC.NLCK, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-                                   KC.LALT, KC.LGUI, KC.LSFT, ADJUST,       ADJUST,  RAISE,  KC.VOLD, KC.VOLU,
+        KC.F1,  KC.F2,  KC.F3,  KC.F4,  KC.F5,  KC.F6,                        KC.F7,  KC.F8, KC.F9, KC.F10, KC.F11, KC.F12,\
+        KC.F13, KC.F14, KC.F15, KC.F16, KC.F17, KC.F18,                       KC.F19, KC.F20, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+                            KC.TRNS, KC.LGUI,   KC.MO(5),  KC.SPC,     KC.ENT,   RAISE,  KC.RALT, XXXXXXX,
     ]
 ]
 
